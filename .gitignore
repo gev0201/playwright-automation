@@ -1,0 +1,25 @@
+node_modules/
+dist/
+
+# Playwright
+allure-results/
+allure-report/
+test-results/
+playwright-report/
+blob-report/
+playwright/.auth/
+
+# Environment
+.env
+*.env.local
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
