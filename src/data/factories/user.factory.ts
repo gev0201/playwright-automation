@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+/** Generated registration data shared by UI scenarios and API creation requests. */
 export interface UserData {
   firstName: string;
   lastName: string;
@@ -7,6 +8,7 @@ export interface UserData {
   password: string;
 }
 
+/** Generates user data, then applies overrides; it does not create a user in the application. */
 export function createUser(overrides: Partial<UserData> = {}): UserData {
   return {
     firstName: faker.person.firstName(),
@@ -17,6 +19,7 @@ export function createUser(overrides: Partial<UserData> = {}): UserData {
   };
 }
 
+/** Generates count independent objects with the same overrides; uniqueness is not guaranteed. */
 export function createUsers(count: number, overrides: Partial<UserData> = {}): UserData[] {
   return Array.from({ length: count }, () => createUser(overrides));
 }

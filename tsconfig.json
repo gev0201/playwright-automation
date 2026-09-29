@@ -1,35 +1,60 @@
 {
+  // TypeScript accepts comments in this configuration file; npm package manifests do not.
   "compilerOptions": {
+    // Keep emitted JavaScript compatible with ES2022 language features.
     "target": "ES2022",
+    // Determine CommonJS/ES module behavior using Node's package and file-extension rules.
     "module": "NodeNext",
+    // Resolve imports using the matching NodeNext rules, including explicit .js import paths.
     "moduleResolution": "NodeNext",
+    // Preserve the repository's relative directory layout if files are emitted.
     "rootDir": ".",
+    // Short import paths understood by TypeScript and Playwright; tsc does not rewrite them on emit.
     "paths": {
+      // Page objects for application screens.
       "@pages/*": ["./src/pages/*"],
+      // Reusable UI widgets scoped to page sections.
       "@components/*": ["./src/components/*"],
+      // Business workflows coordinating page objects.
       "@flows/*": ["./src/flows/*"],
+      // HTTP transport helpers and service clients.
       "@api/*": ["./src/api/*"],
+      // Shared Playwright test fixtures.
       "@fixtures/*": ["./src/fixtures/*"],
+      // Generated and static test data.
       "@data/*": ["./src/data/*"],
+      // Environment loading, logging, retries, and assertions.
       "@utils/*": ["./src/utils/*"],
+      // Per-environment default configuration.
       "@config/*": ["./config/*"]
     },
+    // Destination for compiler output when not running with --noEmit.
     "outDir": "dist",
+    // Enable TypeScript's strict family of type-safety checks.
     "strict": true,
+    // Support interoperable imports from CommonJS dependencies.
     "esModuleInterop": true,
+    // Skip type-checking dependency declaration bodies while still checking application code.
     "skipLibCheck": true,
+    // Reject import casing that would behave differently on case-sensitive file systems.
     "forceConsistentCasingInFileNames": true,
+    // Allow typed imports of JSON modules.
     "resolveJsonModule": true,
+    // Generate public .d.ts declarations when emitting compiler output.
     "declaration": true,
+    // Link generated declarations back to their TypeScript source.
     "declarationMap": true,
+    // Link emitted JavaScript back to its TypeScript source for debugging.
     "sourceMap": true
   },
+  // Type-check framework code, all test directories, environment defaults, and runner settings.
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
     "config/**/*.ts",
     "playwright.config.ts"
   ],
+  // Keep dependencies and generated build/report output out of initial source discovery.
   "exclude": [
     "node_modules",
     "dist",

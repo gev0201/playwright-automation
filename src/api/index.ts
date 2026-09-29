@@ -1,3 +1,4 @@
+/** Public entry point for API transport, service clients, and their request/response types. */
 export { BaseApiClient } from './BaseApiClient.js';
 export type { ApiResponse } from './BaseApiClient.js';
 export { UsersApiClient } from './UsersApiClient.js';
