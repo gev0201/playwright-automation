@@ -8,6 +8,7 @@
     "test:e2e": "npx playwright test --project=e2e-chromium",
     "test:e2e:all": "npx playwright test --project=e2e-chromium --project=e2e-firefox --project=e2e-webkit",
     "test:api": "npx playwright test --project=api",
+    "test:framework": "npx playwright test --project=framework",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
     "test:ui": "npx playwright test --ui",

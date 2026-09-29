@@ -3,8 +3,10 @@ import { LoginPage } from '../pages/LoginPage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { UsersApiClient } from '../api/UsersApiClient.js';
 import { LoginFlow } from '../flows/LoginFlow.js';
+import { getEnvConfig, type EnvConfig } from '../utils/env.js';
 
 export type AppFixtures = {
+  envConfig: EnvConfig;
   loginPage: LoginPage;
   homePage: HomePage;
   usersApi: UsersApiClient;
@@ -12,6 +14,10 @@ export type AppFixtures = {
 };
 
 export const test = base.extend<AppFixtures>({
+  envConfig: async ({}, use) => {
+    await use(getEnvConfig());
+  },
+
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page));
   },
@@ -20,9 +26,8 @@ export const test = base.extend<AppFixtures>({
     await use(new HomePage(page));
   },
 
-  usersApi: async ({ request }, use) => {
-    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-    await use(new UsersApiClient(request, baseUrl));
+  usersApi: async ({ request, envConfig }, use) => {
+    await use(new UsersApiClient(request, envConfig.apiUrl));
   },
 
   loginFlow: async ({ page }, use) => {

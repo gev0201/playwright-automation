@@ -11,6 +11,7 @@
 - Run all tests: `npm test`
 - Run API tests only: `npm run test:api`
 - Run E2E tests only: `npm run test:e2e`
+- Run framework regression tests without an application: `npm run test:framework` (temporary loopback servers; Chromium required for the UI routing check)
 
 ## Conventions
 - Page objects go in `src/pages/` and extend `BasePage`

@@ -28,22 +28,22 @@ export class UsersApiClient extends BaseApiClient {
   }
 
   async getUsers(): Promise<ApiResponse<User[]>> {
-    return this.get<User[]>('/api/users');
+    return this.get<User[]>('users');
   }
 
   async getUserById(id: string): Promise<ApiResponse<User>> {
-    return this.get<User>(`/api/users/${id}`);
+    return this.get<User>(`users/${id}`);
   }
 
   async createUser(payload: CreateUserPayload): Promise<ApiResponse<User>> {
-    return this.post<User>('/api/users', payload);
+    return this.post<User>('users', payload);
   }
 
   async updateUser(id: string, payload: UpdateUserPayload): Promise<ApiResponse<User>> {
-    return this.put<User>(`/api/users/${id}`, payload);
+    return this.put<User>(`users/${id}`, payload);
   }
 
   async deleteUser(id: string): Promise<ApiResponse<void>> {
-    return this.delete<void>(`/api/users/${id}`);
+    return this.delete<void>(`users/${id}`);
   }
 }

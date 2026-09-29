@@ -13,12 +13,12 @@ export abstract class BaseApiClient {
   ) {}
 
   protected async get<T>(endpoint: string, options?: object): Promise<ApiResponse<T>> {
-    const response = await this.request.get(`${this.baseUrl}${endpoint}`, options);
+    const response = await this.request.get(this.resolveUrl(endpoint), options);
     return this.parseResponse<T>(response);
   }
 
   protected async post<T>(endpoint: string, data?: object, options?: object): Promise<ApiResponse<T>> {
-    const response = await this.request.post(`${this.baseUrl}${endpoint}`, {
+    const response = await this.request.post(this.resolveUrl(endpoint), {
       data,
       ...options,
     });
@@ -26,7 +26,7 @@ export abstract class BaseApiClient {
   }
 
   protected async put<T>(endpoint: string, data?: object, options?: object): Promise<ApiResponse<T>> {
-    const response = await this.request.put(`${this.baseUrl}${endpoint}`, {
+    const response = await this.request.put(this.resolveUrl(endpoint), {
       data,
       ...options,
     });
@@ -34,7 +34,7 @@ export abstract class BaseApiClient {
   }
 
   protected async patch<T>(endpoint: string, data?: object, options?: object): Promise<ApiResponse<T>> {
-    const response = await this.request.patch(`${this.baseUrl}${endpoint}`, {
+    const response = await this.request.patch(this.resolveUrl(endpoint), {
       data,
       ...options,
     });
@@ -42,8 +42,12 @@ export abstract class BaseApiClient {
   }
 
   protected async delete<T = void>(endpoint: string, options?: object): Promise<ApiResponse<T>> {
-    const response = await this.request.delete(`${this.baseUrl}${endpoint}`, options);
+    const response = await this.request.delete(this.resolveUrl(endpoint), options);
     return this.parseResponse<T>(response);
+  }
+
+  private resolveUrl(endpoint: string): string {
+    return new URL(endpoint.replace(/^\/+/, ''), `${this.baseUrl.replace(/\/+$/, '')}/`).toString();
   }
 
   private async parseResponse<T>(response: APIResponse): Promise<ApiResponse<T>> {

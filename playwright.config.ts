@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import { getEnvConfig } from './src/utils/env.js';
 
-dotenv.config();
+const envConfig = getEnvConfig();
 
 export default defineConfig({
   testDir: './tests',
@@ -17,7 +17,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: envConfig.baseUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -25,9 +25,13 @@ export default defineConfig({
 
   projects: [
     {
+      name: 'framework',
+      testDir: './tests/framework',
+    },
+    {
       name: 'api',
       testDir: './tests/api',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], baseURL: envConfig.apiUrl },
     },
     {
       name: 'e2e-chromium',

@@ -1,5 +1,4 @@
-import { test as base } from '@playwright/test';
-import { getEnvConfig } from '../utils/env.js';
+import { test as base } from './base.fixture.js';
 
 export type AuthFixtures = {
   authenticatedPage: ReturnType<typeof base.extend>;
@@ -8,6 +7,10 @@ export type AuthFixtures = {
 const storageStatePath = 'playwright/.auth/user.json';
 
 export const authSetup = base.extend({
+  baseURL: async ({ envConfig }, use) => {
+    await use(envConfig.baseUrl);
+  },
+
   storageState: async ({}, use) => {
     await use(storageStatePath);
   },

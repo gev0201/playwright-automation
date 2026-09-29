@@ -4,11 +4,11 @@ Review date: 2026-09-29
 
 ## Overall assessment
 
-The project provides a good TypeScript + Playwright framework skeleton and broadly matches the original requirements. It does not need to be rebuilt. Configuration, authentication, and test-data lifecycle management need to be completed before expanding the suite significantly.
+The project provides a good TypeScript + Playwright framework skeleton and broadly matches the original requirements. It does not need to be rebuilt. Environment configuration has been connected and verified; authentication provisioning and test-data lifecycle management still need to be completed before expanding the suite significantly.
 
-All items below are open. Confirmed defects, incomplete capabilities, and optional improvements are distinguished so that architectural preferences are not treated as bugs.
+Checkboxes indicate current resolution status. Confirmed defects, incomplete capabilities, and optional improvements are distinguished so that architectural preferences are not treated as bugs.
 
-## Verification performed
+## Verification performed during the initial review
 
 | Check | Result |
 | --- | --- |
@@ -30,13 +30,17 @@ The full application suite was not validated. No responsive application target w
 
 ### ISSUE-01: Environment selection is disconnected from test execution
 
-- [ ] Resolve
-- **Classification:** Confirmed configuration defect.
-- **Evidence:** `playwright.config.ts` and the `usersApi` fixture independently read `BASE_URL`. Neither consumes `getEnvConfig()`. The environment files duplicate the settings in the utility without being loaded by it. Configured `apiUrl` values are unused.
-- **Impact:** The documented `TEST_ENV` switch does not select the test target. UI and API cannot be configured independently through the intended environment configuration. A wrongly selected target becomes particularly dangerous for mutating tests.
-- **Relevant files:** `playwright.config.ts`, `src/fixtures/base.fixture.ts`, `src/utils/env.ts`, `config/env.dev.ts`, `config/env.staging.ts`, `config/env.prod.ts`, `README.md`.
-- **Suggested fix:** Introduce one validated configuration loader with documented override precedence. Consume it in Playwright, API fixtures, and authentication. Define whether the API base URL includes `/api` and align client paths to avoid duplication. Reject unknown environments and invalid configuration before execution.
-- **Acceptance:** Selecting an environment changes the effective UI/API targets; explicit overrides work consistently; invalid configuration fails early; no duplicate environment definitions remain.
+- [x] Fixed (2026-09-29)
+- **Classification:** Resolved configuration defect.
+- **Original evidence:** `playwright.config.ts` and the `usersApi` fixture independently read `BASE_URL`. Neither consumed `getEnvConfig()`. Environment defaults were duplicated, and configured `apiUrl` values were unused.
+- **Original impact:** `TEST_ENV` did not select the test target, and UI/API hosts could not be controlled independently through the intended configuration.
+- **Resolution:** `src/utils/env.ts` now loads the existing `config/env.*.ts` files as the sole source of defaults. Playwright, API fixtures, and the authentication fixture consume the shared configuration. Shell variables override `.env`, which overrides environment defaults. `BASE_URL` affects only UI; `API_URL` supplies the complete API prefix. `ADMIN_EMAIL` and `ADMIN_PASSWORD` are supported by the same loader.
+- **Validation:** Unknown or empty environments, malformed/non-HTTP(S) URLs, blank URL overrides, embedded URL credentials, whitespace, queries, and fragments are rejected before test execution. Configuration results are copied so callers cannot mutate shared defaults.
+- **API path convention:** API roots are normalized with one trailing slash. Clients use service-relative endpoints such as `users`; native API-project requests use relative paths such as `health`. URL joining preserves custom prefixes without duplicating `/api`.
+- **Relevant files:** `src/utils/env.ts`, `config/env.*.ts`, `playwright.config.ts`, `src/fixtures/base.fixture.ts`, `src/fixtures/auth.fixture.ts`, `src/api/BaseApiClient.ts`, `src/api/UsersApiClient.ts`, `tests/api/health.api.spec.ts`, `tests/framework/env.spec.ts`, `tests/framework/environment-routing.spec.ts`, `package.json`, `README.md`, `AGENTS.md`.
+- **Verification:** Regression tests reproduced the old behavior before implementation. `npm run lint` passes. All 49 framework tests pass under `dev`, `staging`, `prod`, and separate UI/API overrides (196 successful executions). The existing health API test also passed against a temporary local service at `/custom/api/health` with the UI target deliberately unreachable.
+- **Scope:** All HTTP/browser routing checks used temporary loopback servers; no staging/production requests were made. Full authentication provisioning and production mutation safeguards remain separate open issues.
+- **Acceptance:** Met: environment selection controls effective targets, independent overrides work consistently, invalid configuration fails early, and default environment definitions are no longer duplicated.
 
 ### ISSUE-02: Authentication support is only a scaffold
 
@@ -104,12 +108,12 @@ The full application suite was not validated. No responsive application target w
 
 ### ISSUE-08: The health test bypasses the shared fixture entry point
 
-- [ ] Resolve
-- **Classification:** Confirmed project-convention inconsistency.
-- **Evidence:** The health test imports directly from `@playwright/test`, contrary to `AGENTS.md`.
-- **Impact:** Future shared configuration, hooks, fixtures, and custom assertion integration may not apply consistently to this test.
+- [x] Fixed as part of ISSUE-01 (2026-09-29)
+- **Classification:** Resolved project-convention inconsistency.
+- **Original evidence:** The health test imported directly from `@playwright/test`, contrary to `AGENTS.md`.
+- **Resolution:** The health test now imports `test` and `expect` from the shared fixture entry point. API-only fixtures remain lazy and do not require browser startup.
 - **Relevant files:** `tests/api/health.api.spec.ts`, `src/fixtures/base.fixture.ts`, `AGENTS.md`.
-- **Suggested fix:** Import the shared test and assertion entry point, preserving lazy fixture initialization so API-only tests do not launch a browser unnecessarily.
+- **Verification:** The existing health test passed against a temporary local API using the real API project configuration. Type checking and test discovery pass.
 - **Acceptance:** All application tests consistently use the shared entry point.
 
 ### ISSUE-09: API response types do not guarantee the runtime response shape
